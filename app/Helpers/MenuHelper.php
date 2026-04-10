@@ -59,14 +59,14 @@ class MenuHelper
         return [
             [
                 'icon' => 'authentication',
-                'name' => 'Charts',
+                'name' => 'Data Wilayah',
                 'subItems' => [
-                    ['name' => 'STO', 'path' => '/line-chart', 'pro' => false],
-                    ['name' => 'Sektor', 'path' => '/bar-chart', 'pro' => false],
-                    ['name' => 'Service Area', 'path' => '/bar-chart', 'pro' => false],
-                    ['name' => 'Datel', 'path' => '/bar-chart', 'pro' => false],
-                    ['name' => 'Branch', 'path' => '/bar-chart', 'pro' => false],
-                    ['name' => 'Witel', 'path' => '/bar-chart', 'pro' => false],
+                    ['name' => 'STO', 'path' => '/stos', 'pro' => false],
+                    ['name' => 'Sektor', 'path' => '/sektors', 'pro' => false],
+                    ['name' => 'Service Area', 'path' => '/service-areas', 'pro' => false],
+                    ['name' => 'Datel', 'path' => '/datels', 'pro' => false],
+                    ['name' => 'Branch', 'path' => '/branches', 'pro' => false],
+                    ['name' => 'Witel', 'path' => '/witels', 'pro' => false],
                 ],
             ],
             [

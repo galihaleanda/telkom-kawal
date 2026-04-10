@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\MasterData;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MasterData\StorePicRequest;
+use App\Http\Requests\MasterData\UpdatePicRequest;
 use App\Models\Pic;
 use App\Models\ServiceArea;
 use App\Services\MasterData\Pic\PicService;
-use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PicController extends Controller
 {
@@ -14,53 +16,49 @@ class PicController extends Controller
 
     public function index()
     {
-        $pics = Pic::with('serviceArea')->latest()->get();
+        $pics = Pic::with('serviceArea.datel')->latest()->paginate(10)->withQueryString();
         return view('master-data.pics.index', compact('pics'));
     }
 
     public function create()
     {
-        $serviceAreas = ServiceArea::with('datel')->get();
+        $serviceAreas = ServiceArea::with('datel')->orderBy('name')->get();
         return view('master-data.pics.create', compact('serviceAreas'));
     }
 
-    public function store(Request $request)
+    public function store(StorePicRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'service_area_id' => 'required|exists:service_areas,id'
-        ]);
-
-        $this->picService->store($data);
-        return redirect()->route('pics.index')->with('success', 'PIC berhasil ditambahkan!');
-    }
-
-    public function show(Pic $pic)
-    {
-        $pic->load('serviceArea');
-        return view('master-data.pics.show', compact('pic'));
+        try {
+            $this->picService->store($request->validated());
+            return redirect()->route('pics.index')->with('success', 'PIC berhasil ditambahkan!');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function edit(Pic $pic)
     {
-        $serviceAreas = ServiceArea::with('datel')->get();
+        $serviceAreas = ServiceArea::with('datel')->orderBy('name')->get();
         return view('master-data.pics.edit', compact('pic', 'serviceAreas'));
     }
 
-    public function update(Request $request, Pic $pic)
+    public function update(UpdatePicRequest $request, Pic $pic)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'service_area_id' => 'required|exists:service_areas,id'
-        ]);
-
-        $this->picService->update($pic->id, $data);
-        return redirect()->route('pics.index')->with('success', 'PIC berhasil diperbarui!');
+        try {
+            $this->picService->update($pic->id, $request->validated());
+            return redirect()->route('pics.index')->with('success', 'PIC berhasil diperbarui!');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function destroy(Pic $pic)
     {
-        $this->picService->delete($pic->id);
-        return redirect()->route('pics.index')->with('success', 'PIC berhasil dihapus!');
+        try {
+            $this->picService->delete($pic->id);
+            return redirect()->route('pics.index')->with('success', 'PIC berhasil dihapus!');
+        } catch (ValidationException $e) {
+            return redirect()->route('pics.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus PIC.');
+        }
     }
 }

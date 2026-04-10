@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\MasterData;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MasterData\StoreBranchRequest;
+use App\Http\Requests\MasterData\UpdateBranchRequest;
 use App\Models\Branch;
 use App\Models\Witel;
 use App\Services\MasterData\Branch\BranchService;
-use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class BranchController extends Controller
 {
@@ -14,53 +16,49 @@ class BranchController extends Controller
 
     public function index()
     {
-        $branches = Branch::with('witel')->latest()->get();
+        $branches = Branch::with('witel')->latest()->paginate(10)->withQueryString();
         return view('master-data.branches.index', compact('branches'));
     }
 
     public function create()
     {
-        $witels = Witel::all();
+        $witels = Witel::orderBy('name')->get();
         return view('master-data.branches.create', compact('witels'));
     }
 
-    public function store(Request $request)
+    public function store(StoreBranchRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'witel_id' => 'required|exists:witels,id'
-        ]);
-
-        $this->branchService->store($data);
-        return redirect()->route('branches.index')->with('success', 'Branch berhasil ditambahkan!');
-    }
-
-    public function show(Branch $branch)
-    {
-        $branch->load(['witel', 'datels']);
-        return view('master-data.branches.show', compact('branch'));
+        try {
+            $this->branchService->store($request->validated());
+            return redirect()->route('branches.index')->with('success', 'Branch berhasil ditambahkan!');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function edit(Branch $branch)
     {
-        $witels = Witel::all();
+        $witels = Witel::orderBy('name')->get();
         return view('master-data.branches.edit', compact('branch', 'witels'));
     }
 
-    public function update(Request $request, Branch $branch)
+    public function update(UpdateBranchRequest $request, Branch $branch)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'witel_id' => 'required|exists:witels,id'
-        ]);
-
-        $this->branchService->update($branch->id, $data);
-        return redirect()->route('branches.index')->with('success', 'Branch berhasil diperbarui!');
+        try {
+            $this->branchService->update($branch->id, $request->validated());
+            return redirect()->route('branches.index')->with('success', 'Branch berhasil diperbarui!');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function destroy(Branch $branch)
     {
-        $this->branchService->delete($branch->id);
-        return redirect()->route('branches.index')->with('success', 'Branch berhasil dihapus!');
+        try {
+            $this->branchService->delete($branch->id);
+            return redirect()->route('branches.index')->with('success', 'Branch berhasil dihapus!');
+        } catch (ValidationException $e) {
+            return redirect()->route('branches.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Branch.');
+        }
     }
 }

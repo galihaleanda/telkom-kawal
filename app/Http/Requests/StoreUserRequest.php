@@ -27,8 +27,38 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'jenis_kelamin' => 'required|string|in:Pria,Wanita',
             'posisi' => 'required|string|max:255',
-            'nik' => 'required|string|size:10|unique:users,nik',
+            'nik' => 'required|string|min:6|unique:users,nik',
             'role' => 'required|string|in:admin,viewer',
+        ];
+    }
+
+    /**
+     * Get custom Indonesian validation messages.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'          => 'Nama lengkap wajib diisi.',
+            'name.string'            => 'Nama lengkap harus berupa teks.',
+            'name.max'               => 'Nama lengkap maksimal 255 karakter.',
+
+            'email.required'         => 'Email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
+            'email.max'              => 'Email maksimal 255 karakter.',
+            'email.unique'           => 'Email sudah digunakan oleh user lain.',
+
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'jenis_kelamin.in'       => 'Jenis kelamin harus Pria atau Wanita.',
+
+            'posisi.required'        => 'Posisi / jabatan wajib diisi.',
+            'posisi.max'             => 'Posisi / jabatan maksimal 255 karakter.',
+
+            'nik.required'           => 'NIK wajib diisi.',
+            'nik.min'                => 'NIK minimal 6 karakter.',
+            'nik.unique'             => 'NIK sudah digunakan oleh user lain.',
+
+            'role.required'          => 'Role wajib dipilih.',
+            'role.in'                => 'Role harus Admin atau Viewer.',
         ];
     }
 }

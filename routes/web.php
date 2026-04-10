@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\MasterData\WitelController;
+use App\Http\Controllers\MasterData\BranchController;
+use App\Http\Controllers\MasterData\DatelController;
+use App\Http\Controllers\MasterData\ServiceAreaController;
+use App\Http\Controllers\MasterData\SektorController;
+use App\Http\Controllers\MasterData\StoController;
+use App\Http\Controllers\MasterData\PicController;
 
 
 // dashboard pages
@@ -13,6 +20,15 @@ Route::get('/', function () {
 
 // User Management
 Route::resource('users', UserController::class);
+
+// Master Data
+Route::resource('witels',        WitelController::class)->except(['show']);
+Route::resource('branches',      BranchController::class)->except(['show']);
+Route::resource('datels',        DatelController::class)->except(['show']);
+Route::resource('service-areas', ServiceAreaController::class)->except(['show']);
+Route::resource('sektors',       SektorController::class)->except(['show']);
+Route::resource('stos',          StoController::class)->except(['show']);
+Route::resource('pics',          PicController::class)->except(['show']);
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
