@@ -15,6 +15,24 @@ class MenuHelper
                 ],
             ],
             [
+                'icon' => 'dashboard',
+                'name' => 'Datin',
+                'subItems' => [
+                    ['name' => 'K2', 'path' => '/'],
+                    ['name' => 'K3', 'path' => '/'],
+                    ['name' => 'Sugar Datin', 'path' => '/'],
+                ],
+            ],
+            [
+                'icon' => 'dashboard',
+                'name' => 'HSI',
+                'subItems' => [
+                    ['name' => 'Indibiz', 'path' => '/'],
+                    ['name' => 'Indihome Reseller', 'path' => '/'],
+                    ['name' => 'Sugar HSI', 'path' => '/'],
+                ],
+            ],
+            [
                 'icon' => 'calendar',
                 'name' => 'Calendar',
                 'path' => '/calendar',
@@ -58,6 +76,11 @@ class MenuHelper
     {
         return [
             [
+                'icon' => 'ui-elements',
+                'name' => 'Import Data',
+                'path' => '/import-data',
+            ],
+            [
                 'icon' => 'authentication',
                 'name' => 'Data Wilayah',
                 'subItems' => [
@@ -67,18 +90,6 @@ class MenuHelper
                     ['name' => 'Datel', 'path' => '/datels', 'pro' => false],
                     ['name' => 'Branch', 'path' => '/branches', 'pro' => false],
                     ['name' => 'Witel', 'path' => '/witels', 'pro' => false],
-                ],
-            ],
-            [
-                'icon' => 'ui-elements',
-                'name' => 'UI Elements',
-                'subItems' => [
-                    ['name' => 'Alerts', 'path' => '/alerts', 'pro' => false],
-                    ['name' => 'Avatar', 'path' => '/avatars', 'pro' => false],
-                    ['name' => 'Badge', 'path' => '/badge', 'pro' => false],
-                    ['name' => 'Buttons', 'path' => '/buttons', 'pro' => false],
-                    ['name' => 'Images', 'path' => '/image', 'pro' => false],
-                    ['name' => 'Videos', 'path' => '/videos', 'pro' => false],
                 ],
             ],
             [

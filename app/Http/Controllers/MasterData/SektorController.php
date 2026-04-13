@@ -5,10 +5,13 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreSektorRequest;
 use App\Http\Requests\MasterData\UpdateSektorRequest;
+use App\Imports\SektorImport;
 use App\Models\Sektor;
 use App\Models\ServiceArea;
 use App\Services\MasterData\Sektor\SektorService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SektorController extends Controller
 {
@@ -60,5 +63,25 @@ class SektorController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('sektors.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Sektor.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new SektorImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data Sektor berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('sektors.index')->with('success', $message);
     }
 }

@@ -18,7 +18,7 @@
 <div class="mb-4 flex items-center justify-between">
     <div></div>
     <a href="{{ route('branches.create') }}">
-        <x-ui.button size="sm" variant="primary">+ Tambah Branch</x-ui.button>
+        <x-ui.button size="xs" variant="primary">+ Tambah Branch</x-ui.button>
     </a>
 </div>
 

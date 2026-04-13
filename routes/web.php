@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\MasterData\ImportDataController;
 use App\Http\Controllers\MasterData\WitelController;
 use App\Http\Controllers\MasterData\BranchController;
 use App\Http\Controllers\MasterData\DatelController;
@@ -22,6 +23,16 @@ Route::get('/', function () {
 Route::resource('users', UserController::class);
 
 // Master Data
+Route::get('import-data',  [ImportDataController::class, 'index'])->name('import-data.index');
+Route::post('import-data', [ImportDataController::class, 'import'])->name('import-data.import');
+
+Route::post('witels/import',         [WitelController::class,       'import'])->name('witels.import');
+Route::post('branches/import',       [BranchController::class,      'import'])->name('branches.import');
+Route::post('datels/import',         [DatelController::class,        'import'])->name('datels.import');
+Route::post('service-areas/import',  [ServiceAreaController::class, 'import'])->name('service-areas.import');
+Route::post('sektors/import',        [SektorController::class,      'import'])->name('sektors.import');
+Route::post('stos/import',           [StoController::class,         'import'])->name('stos.import');
+
 Route::resource('witels',        WitelController::class)->except(['show']);
 Route::resource('branches',      BranchController::class)->except(['show']);
 Route::resource('datels',        DatelController::class)->except(['show']);

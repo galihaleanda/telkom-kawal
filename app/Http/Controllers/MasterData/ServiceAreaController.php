@@ -5,10 +5,13 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreServiceAreaRequest;
 use App\Http\Requests\MasterData\UpdateServiceAreaRequest;
+use App\Imports\ServiceAreaImport;
 use App\Models\Datel;
 use App\Models\ServiceArea;
 use App\Services\MasterData\ServiceArea\ServiceAreaService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ServiceAreaController extends Controller
 {
@@ -60,5 +63,25 @@ class ServiceAreaController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('service-areas.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Service Area.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new ServiceAreaImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data Service Area berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('service-areas.index')->with('success', $message);
     }
 }

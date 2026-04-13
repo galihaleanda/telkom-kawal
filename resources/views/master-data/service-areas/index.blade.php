@@ -17,7 +17,7 @@
 
 <div class="mb-4 flex items-center justify-between">
     <div></div>
-    <a href="{{ route('service-areas.create') }}"><x-ui.button size="sm" variant="primary">+ Tambah Service Area</x-ui.button></a>
+    <a href="{{ route('service-areas.create') }}"><x-ui.button size="xs" variant="primary">+ Tambah Service Area</x-ui.button></a>
 </div>
 
 <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

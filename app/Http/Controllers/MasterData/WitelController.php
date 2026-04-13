@@ -5,9 +5,12 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreWitelRequest;
 use App\Http\Requests\MasterData\UpdateWitelRequest;
+use App\Imports\WitelImport;
 use App\Models\Witel;
 use App\Services\MasterData\Witel\WitelService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class WitelController extends Controller
 {
@@ -57,5 +60,25 @@ class WitelController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('witels.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Witel.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new WitelImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data Witel berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('witels.index')->with('success', $message);
     }
 }

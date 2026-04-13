@@ -5,10 +5,13 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreStoRequest;
 use App\Http\Requests\MasterData\UpdateStoRequest;
+use App\Imports\StoImport;
 use App\Models\Sektor;
 use App\Models\Sto;
 use App\Services\MasterData\Sto\StoService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StoController extends Controller
 {
@@ -60,5 +63,25 @@ class StoController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('stos.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus STO.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new StoImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data STO berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('stos.index')->with('success', $message);
     }
 }

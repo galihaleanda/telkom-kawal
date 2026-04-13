@@ -23,7 +23,7 @@
 <div class="mb-4 flex items-center justify-between">
     <div></div>
     <a href="{{ route('witels.create') }}">
-        <x-ui.button size="sm" variant="primary">+ Tambah Witel</x-ui.button>
+        <x-ui.button size="xs" variant="primary">+ Tambah Witel</x-ui.button>
     </a>
 </div>
 

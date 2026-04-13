@@ -5,10 +5,13 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreBranchRequest;
 use App\Http\Requests\MasterData\UpdateBranchRequest;
+use App\Imports\BranchImport;
 use App\Models\Branch;
 use App\Models\Witel;
 use App\Services\MasterData\Branch\BranchService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BranchController extends Controller
 {
@@ -60,5 +63,25 @@ class BranchController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('branches.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Branch.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new BranchImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data Branch berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('branches.index')->with('success', $message);
     }
 }

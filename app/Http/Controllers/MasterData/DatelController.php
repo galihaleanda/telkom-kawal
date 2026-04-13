@@ -5,10 +5,13 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\StoreDatelRequest;
 use App\Http\Requests\MasterData\UpdateDatelRequest;
+use App\Imports\DatelImport;
 use App\Models\Branch;
 use App\Models\Datel;
 use App\Services\MasterData\Datel\DatelService;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DatelController extends Controller
 {
@@ -60,5 +63,25 @@ class DatelController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('datels.index')->with('error', $e->errors()['error'][0] ?? 'Gagal menghapus Datel.');
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new DatelImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImported();
+        $skipped  = $import->getSkipped();
+
+        $message = "{$imported} data Datel berhasil diimport";
+        if ($skipped > 0) {
+            $message .= ", {$skipped} data dilewati (duplikat atau tidak valid)";
+        }
+
+        return redirect()->route('datels.index')->with('success', $message);
     }
 }
